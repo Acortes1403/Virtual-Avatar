@@ -1,0 +1,100 @@
+# ---------- helpers ----------
+def _do_with_speed(names, targets, speed):
+    motion_service.angleInterpolationWithSpeed(names, targets, speed)
+
+def prep():
+    try: motion_service.wakeUp()
+    except: pass
+    try: motion_service.setBreathEnabled("Body", 0)
+    except: pass
+    try: motion_service.setExternalCollisionProtectionEnabled("Arms", 0)
+    except: pass
+    try: motion_service.setStiffnesses(["Head","LArm","RArm","Torso"], 0.9)
+    except: pass
+
+def neutral_user_match_speed(speed_fraction):
+    _do_with_speed(
+        ["HeadPitch","HeadYaw","LHand","RHand",
+         "LShoulderPitch","RShoulderPitch","LElbowRoll","RElbowRoll",
+         "HipPitch","HipRoll"],
+        [-0.08, 0.05, 0.30, 0.30,
+          1, 1, -0.30, 0.30, 0.00, 0.00],
+        speed_fraction
+    )
+
+def restore():
+    try: motion_service.setExternalCollisionProtectionEnabled("Arms", 1)
+    except: pass
+    try: motion_service.setBreathEnabled("Body", 1)
+    except: pass
+    # try: motion_service.rest()
+    # except: pass
+
+def anim_sadness_v2(speed_main=0.35, speed_sigh=0.25,
+                                arm_pitch=0.18,          # hombro derecho algo caído
+                                hip_down_base=-0.10,     # torso inclinado (base)
+                                hip_down_exhale=-0.18,   # torso más abajo al exhalar
+                                head_down_fixed=0.22):  # cabeza abajo fija
+
+    # 0) Postura base (solo lado derecho) + cabeza abajo fija
+    _do_with_speed(
+        ["RHand",
+         "RShoulderPitch","RShoulderRoll",
+         "RElbowRoll","RElbowYaw","RWristYaw",
+         "HipPitch","HeadPitch","HeadYaw"],
+        [ 0.25,
+          arm_pitch,      -0.06,
+          0.50,           0.15,     0.05,
+          hip_down_base,  head_down_fixed, 0.00],
+        speed_main
+    )
+    # (No se toca nada del lado izquierdo en toda la animación)
+
+    # 1) SUSPIRO — INHALA (abre un poco la mano dcha, torso menos caído)
+    _do_with_speed(
+        ["RHand","RShoulderRoll","HipPitch"],
+        [ 0.38,  -0.10,         -0.06],
+        speed_sigh
+    )
+    #    EXHALA (cierra algo y cae más el torso)
+    _do_with_speed(
+        ["RHand","RShoulderRoll","HipPitch"],
+        [ 0.22,  -0.06,          hip_down_exhale],
+        speed_sigh
+    )
+
+    # 2) “Limpiar lágrima” con la derecha (cabeza NO se mueve)
+    _do_with_speed(
+        ["RShoulderPitch","RElbowYaw","RElbowRoll","RWristYaw","RHand"],
+        [ -0.10,           0.75,        1.02,        0.18,     0.22],
+        speed_main
+    )
+    _do_with_speed(
+        ["RShoulderPitch","RElbowYaw","RElbowRoll","RWristYaw","RHand"],
+        [  arm_pitch,       0.20,        0.55,        0.05,     0.25],
+        speed_main
+    )
+
+    # 3) Reafirmar postura baja (solo lado derecho)
+    _do_with_speed(
+        ["RShoulderPitch","RElbowRoll","RHand","HipPitch"],
+        [ arm_pitch,        0.50,        0.24,  hip_down_exhale + 0.02],
+        speed_main
+    )
+
+    # 4) “Neutral” SOLO LADO DERECHO (y cabeza/torso) para no mover el izquierdo
+    _do_with_speed(
+        ["HeadPitch","HeadYaw","RHand","RShoulderPitch","RElbowRoll","HipPitch"],
+        [-0.08,     0.05,    0.30,   1.00,            0.30,       0.00],
+        speed_main
+    )
+
+
+    # 4) Volver a NEUTRAL a la MISMA velocidad base
+    neutral_user_match_speed(speed_main)
+
+
+
+prep()
+anim_sadness_v2()   # ajusta speed_main/speed_sigh/arm
+restore()

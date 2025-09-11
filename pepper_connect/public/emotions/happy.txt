@@ -1,0 +1,85 @@
+# ====== Euforia (termina en neutral) — listo para pegar ======
+# Requiere: motion_service ya disponible en tu entorno
+
+# ---------- helpers ----------
+def _do_with_speed(names, targets, speed):
+    motion_service.angleInterpolationWithSpeed(names, targets, speed)
+
+# ---------- preparación / neutral / restore ----------
+def prep():
+    try: motion_service.wakeUp()
+    except: pass
+    try: motion_service.setBreathEnabled("Body", 0)
+    except: pass
+    try: motion_service.setExternalCollisionProtectionEnabled("Arms", 0)
+    except: pass
+    try: motion_service.setStiffnesses(["Head","LArm","RArm","Torso"], 0.9)
+    except: pass
+
+def neutral_user_match_speed(speed_fraction):
+    _do_with_speed(
+        ["HeadPitch","HeadYaw","LHand","RHand",
+         "LShoulderPitch","RShoulderPitch","LElbowRoll","RElbowRoll",
+         "HipPitch","HipRoll"],
+        [-0.08, 0.05, 0.30, 0.30,
+          1, 1, -0.30, 0.30,
+          0.00, 0.00],
+        speed_fraction
+    )
+
+def restore():
+    try: motion_service.setExternalCollisionProtectionEnabled("Arms", 1)
+    except: pass
+    try: motion_service.setBreathEnabled("Body", 1)
+    except: pass
+    # Si quieres relajar motores al terminar:
+    # try: motion_service.rest()
+    # except: pass
+
+# ---------- euforia ----------
+def anim_euphoria(speed_main=0.80, speed_burst=0.95):
+    # speed_main = fluidez general; speed_burst = acentos rápidos
+
+
+    # 1) Subida a “V” alta + CERRAR PUÑOS + leve bounce de torso
+    _do_with_speed(
+        ["LShoulderPitch","RShoulderPitch","LShoulderRoll","RShoulderRoll",
+         "LElbowRoll","RElbowRoll","HeadYaw","HeadPitch","HipPitch","LHand","RHand"],
+        [-0.48, -0.48, 0.62, -0.62,  -0.88, 0.88,  0.10, -0.04, -0.03,  0.00, 0.00],
+        speed_main
+    )
+
+    # 2) Burst 1: “pum” de codos + giro de muñecas (puños siguen cerrados)
+    _do_with_speed(
+        ["LElbowRoll","RElbowRoll","LWristYaw","RWristYaw","HeadYaw"],
+        [-1.00, 0.99, -0.50, 0.50, 0.00],
+        speed_burst
+    )
+
+    # 3) Burst 2: snap de regreso parcial (sigue intenso)
+    _do_with_speed(
+        ["LElbowRoll","RElbowRoll","LWristYaw","RWristYaw","HeadYaw"],
+        [-0.78, 0.78, -0.20, 0.20, 0.10],
+        speed_burst
+    )
+
+    # 4) Asentimientos (“sí”) con la cabeza + micro-bounce de torso
+    _do_with_speed(["HeadPitch"], [-0.14], speed_burst)  # baja
+    _do_with_speed(["HeadPitch"], [-0.02], speed_burst)  # sube
+    _do_with_speed(["HeadPitch"], [-0.14], speed_burst)  # baja
+    _do_with_speed(["HeadPitch"], [-0.04], speed_burst)  # sube (queda un poco abajo)
+    _do_with_speed(["HipPitch"],  [-0.03], speed_burst)  # acompaña con torso
+    _do_with_speed(["HipPitch"],  [ 0.00], speed_burst)
+
+    # 5) Pose triunfal breve (brazos arriba) y regreso a NEUTRAL a la MISMA velocidad base
+    _do_with_speed(
+        ["LShoulderPitch","RShoulderPitch","LShoulderRoll","RShoulderRoll","LElbowRoll","RElbowRoll"],
+        [-0.34, -0.34, 0.64, -0.64, -0.90, 0.90],
+        speed_main
+    )
+    neutral_user_match_speed(speed_main)
+
+# ---------- ejecución ----------
+prep()
+anim_euphoria()   # puedes ajustar speed_main/speed_burst si quieres más punch
+restore()

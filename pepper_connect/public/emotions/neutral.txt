@@ -1,0 +1,61 @@
+# ===== Prep, Neutral y Restore (listo para pegar) =====
+
+def _do(names, angles, times):
+    # isAbsolute = 1 (evita True/False en tu sandbox)
+    motion_service.angleInterpolation(names, angles, times, 1)
+
+def prep():
+    # Despierta motores y reduce interferencias (si no existen, se ignoran)
+    try: motion_service.wakeUp()
+    except: pass
+    try: motion_service.setBreathEnabled("Body", 0)
+    except: pass
+    try: motion_service.setExternalCollisionProtectionEnabled("Arms", 0)
+    except: pass
+    try: motion_service.setStiffnesses(["Head","LArm","RArm","Torso"], 0.9)
+    except: pass
+
+def neutral_user():
+    # Tu neutro: cabeza ligera abajo/centro, manos semiabiertas,
+    # brazos al frente con codo levemente flexionado, torso neutro.
+    names = [
+        "HeadPitch","HeadYaw","LHand","RHand",
+        "LShoulderPitch","RShoulderPitch","LElbowRoll","RElbowRoll",
+        "HipPitch","HipRoll"
+    ]
+    angles = [
+        [-0.05, -0.08],  # HeadPitch
+        [ 0.00,  0.05],  # HeadYaw
+        [ 0.35,  0.30],  # LHand
+        [ 0.35,  0.30],  # RHand
+        [ 0.00],         # LShoulderPitch (brazos al frente)
+        [ 0.00],         # RShoulderPitch
+        [-0.30],         # LElbowRoll (flex leve)
+        [ 0.30],         # RElbowRoll
+        [ 0.00],         # HipPitch
+        [ 0.00],         # HipRoll
+    ]
+    times = [
+        [0.20, 0.60],    # HeadPitch
+        [0.20, 0.60],    # HeadYaw
+        [0.20, 0.50],    # LHand
+        [0.20, 0.50],    # RHand
+        [0.35],          # LShoulderPitch
+        [0.35],          # RShoulderPitch
+        [0.35],          # LElbowRoll
+        [0.35],          # RElbowRoll
+        [0.30],          # HipPitch
+        [0.30],          # HipRoll
+    ]
+    _do(names, angles, times)
+
+def restore():
+    # Restaura protecciones y breathing suave (si existen)
+    try: motion_service.setExternalCollisionProtectionEnabled("Arms", 1)
+    except: pass
+    try: motion_service.setBreathEnabled("Body", 1)
+    except: pass
+
+prep()
+neutral_user()
+restore()

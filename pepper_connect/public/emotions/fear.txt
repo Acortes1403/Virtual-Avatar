@@ -1,0 +1,83 @@
+# ---------- helpers ----------
+def _do_with_speed(names, targets, speed):
+    motion_service.angleInterpolationWithSpeed(names, targets, speed)
+
+def prep():
+    try: motion_service.wakeUp()
+    except: pass
+    try: motion_service.setBreathEnabled("Body", 0)
+    except: pass
+    try: motion_service.setExternalCollisionProtectionEnabled("Arms", 0)
+    except: pass
+    try: motion_service.setStiffnesses(["Head","LArm","RArm","Torso"], 0.9)
+    except: pass
+
+def neutral_user_match_speed(speed_fraction):
+    _do_with_speed(
+        ["HeadPitch","HeadYaw","LHand","RHand",
+         "LShoulderPitch","RShoulderPitch","LElbowRoll","RElbowRoll",
+         "HipPitch","HipRoll"],
+        [-0.08, 0.05, 0.30, 0.30,
+          1, 1, -0.30, 0.30, 0.00, 0.00],
+        speed_fraction
+    )
+
+def restore():
+    try: motion_service.setExternalCollisionProtectionEnabled("Arms", 1)
+    except: pass
+    try: motion_service.setBreathEnabled("Body", 1)
+    except: pass
+    # try: motion_service.rest()
+    # except: pass
+
+def anim_fear_v2(speed_main=0.68, speed_shake=0.96, arm_pitch=0.05):
+    # 0) Postura protegida: brazos en L cerca del pecho (sin bajar del todo)
+    _do_with_speed(
+        ["LHand","RHand",
+         "LShoulderPitch","RShoulderPitch","LShoulderRoll","RShoulderRoll",
+         "LElbowRoll","RElbowRoll","LElbowYaw","RElbowYaw",
+         "LWristYaw","RWristYaw","HipPitch","HeadPitch","HeadYaw"],
+        [ 0.25, 0.25,
+          arm_pitch, arm_pitch,   0.12,  -0.12,
+         -1.00,     1.00,        -0.55,   0.55,
+         -0.10,     0.10,         0.02,    0.04,   0.00],
+        speed_main
+    )
+
+    # 1) Startle 1: micro-sacudida (codos/ muñecas / cabeza a un lado)
+    _do_with_speed(
+        ["LElbowYaw","RElbowYaw","LWristYaw","RWristYaw","HeadYaw","HipPitch"],
+        [-0.70,       0.70,       -0.25,     0.25,      0.18,     0.04],
+        speed_shake
+    )
+    _do_with_speed(
+        ["LElbowYaw","RElbowYaw","LWristYaw","RWristYaw","HeadYaw","HipPitch"],
+        [-0.40,       0.40,       -0.10,     0.10,     -0.10,     0.00],
+        speed_shake
+    )
+
+    # 2) Startle 2: espejo rápido (al otro lado)
+    _do_with_speed(
+        ["LElbowYaw","RElbowYaw","LWristYaw","RWristYaw","HeadYaw","HipPitch"],
+        [-0.70,       0.70,       -0.25,     0.25,     -0.18,     0.04],
+        speed_shake
+    )
+    _do_with_speed(
+        ["LElbowYaw","RElbowYaw","LWristYaw","RWristYaw","HeadYaw","HipPitch"],
+        [-0.50,       0.50,       -0.12,     0.12,      0.00,     0.00],
+        speed_shake
+    )
+
+    # 3) Reafirmar L tensa y manos semi-cerradas (sin “caer” los brazos)
+    _do_with_speed(
+        ["LShoulderPitch","RShoulderPitch","LElbowRoll","RElbowRoll","LHand","RHand"],
+        [ arm_pitch,       arm_pitch,       -1.05,        1.05,       0.25,  0.25],
+        speed_main
+    )
+
+    # 4) Volver a NEUTRAL a la MISMA velocidad base
+    neutral_user_match_speed(speed_main)
+
+prep()
+anim_fear_v2()   # ajusta speed_main/speed_shake si quieres
+restore()

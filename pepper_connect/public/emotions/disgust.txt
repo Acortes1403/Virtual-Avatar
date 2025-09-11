@@ -1,0 +1,90 @@
+# ---------- helpers ----------
+def _do_with_speed(names, targets, speed):
+    motion_service.angleInterpolationWithSpeed(names, targets, speed)
+
+def prep():
+    try: motion_service.wakeUp()
+    except: pass
+    try: motion_service.setBreathEnabled("Body", 0)
+    except: pass
+    try: motion_service.setExternalCollisionProtectionEnabled("Arms", 0)
+    except: pass
+    try: motion_service.setStiffnesses(["Head","LArm","RArm","Torso"], 0.9)
+    except: pass
+
+def neutral_user_match_speed(speed_fraction):
+    _do_with_speed(
+        ["HeadPitch","HeadYaw","LHand","RHand",
+         "LShoulderPitch","RShoulderPitch","LElbowRoll","RElbowRoll",
+         "HipPitch","HipRoll"],
+        [-0.08, 0.05, 0.30, 0.30,
+          1, 1, -0.30, 0.30, 0.00, 0.00],
+        speed_fraction
+    )
+
+def restore():
+    try: motion_service.setExternalCollisionProtectionEnabled("Arms", 1)
+    except: pass
+    try: motion_service.setBreathEnabled("Body", 1)
+    except: pass
+    # try: motion_service.rest()
+    # except: pass
+
+def anim_disgust_v2(speed_main=0.90, speed_shake=0.96, arm_pitch=0):
+    # 0) Desde brazos abajo: solo ANTEBRAZO arriba a pose "STOP"
+    _do_with_speed(
+        ["LHand","RHand",
+         "LShoulderPitch","RShoulderPitch","LShoulderRoll","RShoulderRoll",
+         "LElbowRoll","RElbowRoll","LElbowYaw","RElbowYaw",
+         "LWristYaw","RWristYaw","HeadPitch","HipPitch"],
+        [ 1.00, 1.00,
+          arm_pitch, arm_pitch,   0.10,  -0.10,
+          1.05,     -1.05,       -1.00,   1.00,
+          0.70,     -0.70,       -0.06,    0.02],
+        speed_main
+    )
+
+    # ===== Sacudida 1: mini empuje + flick de muñeca =====
+    _do_with_speed(
+        ["LElbowRoll","RElbowRoll","LWristYaw","RWristYaw"],
+        [-0.90,         0.90,        0.95,      -0.95],
+        speed_shake
+    )
+    _do_with_speed(
+        ["LElbowRoll","RElbowRoll","LWristYaw","RWristYaw"],
+        [-1.05,         1.05,        0.70,      -0.70],
+        speed_shake
+    )
+
+    # ===== Sacudida 2: abre un poco hacia afuera + "NO" suave con la cabeza =====
+    _do_with_speed(
+        ["LElbowYaw","RElbowYaw","LElbowRoll","RElbowRoll","LWristYaw","RWristYaw","HeadYaw"],
+        [-0.50,         0.50,        -0.92,       0.92,      0.88,     -0.88,       0.16],
+        speed_shake
+    )
+    _do_with_speed(
+        ["LElbowYaw","RElbowYaw","LElbowRoll","RElbowRoll","LWristYaw","RWristYaw","HeadYaw"],
+        [-0.35,         0.35,        -1.05,       1.05,      0.70,     -0.70,      -0.14],
+        speed_shake
+    )
+    # recentrar leve para que la Sacudida 3 salga limpia
+    _do_with_speed(["HeadYaw"], [0.00], speed_shake)
+
+    # ===== Sacudida 3: empuje corto y retiro =====
+    _do_with_speed(
+        ["LElbowRoll","RElbowRoll","LWristYaw","RWristYaw","HipPitch"],
+        [-0.88,         0.88,        0.92,      -0.92,        0.04],
+        speed_shake
+    )
+    _do_with_speed(
+        ["LElbowRoll","RElbowRoll","LWristYaw","RWristYaw","HipPitch"],
+        [-1.05,         1.05,        0.70,      -0.70,        0.02],
+        speed_shake
+    )
+
+    # Vuelta a tu NEUTRAL (brazos abajo) con la MISMA velocidad base
+    neutral_user_match_speed(speed_main)
+
+prep()
+anim_disgust_v2()   # ajusta speed_main/speed_burst/arm 
+restore()

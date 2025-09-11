@@ -1,0 +1,20 @@
+# --- Core API ---
+fastapi==0.112.0
+uvicorn[standard]==0.30.5
+python-multipart==0.0.9
+pydantic==2.8.2
+aiofiles==23.2.1
+python-dotenv==1.0.1
+requests==2.32.3
+
+# --- HuggingFace / Transformers ---
+transformers==4.43.3
+huggingface-hub==0.34.4
+
+# --- Whisper + Torch ---
+openai-whisper==20231117
+torch==2.8.0
+
+# --- Utilidades ---
+tqdm==4.67.1
+numpy==2.2.6
