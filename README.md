@@ -550,20 +550,30 @@ Puedes ajustar:
 
 ## Licencia
 
-[Especifica tu licencia aquí]
+Copyright © 2025. Todos los derechos reservados.
+
+Este proyecto es privado y propietario. No está permitido el uso, copia, modificación o distribución sin autorización expresa del autor.
 
 ## Contacto
 
-[Agrega tu información de contacto]
+**Amhed Jahir Cortes Lopez**
+
+- **Correo Personal**: ajclrakirute@gmail.com
+- **Correo Institucional**: a00835822@tec.mx
+- **LinkedIn**: [linkedin.com/in/amhed-jahir-cortes-lopez-03b9322a3](https://www.linkedin.com/in/amhed-jahir-cortes-lopez-03b9322a3)
 
 ## Contribuciones
 
-Las contribuciones son bienvenidas. Por favor:
+Las contribuciones son bienvenidas previa validación y aprobación del **Mirai Innovation Research Institute**.
+
+Para contribuir:
 1. Haz fork del proyecto en [GitHub](https://github.com/Acortes1403/Virtual-Avatar)
 2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
 3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
 4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+5. Abre un Pull Request con una descripción detallada de los cambios propuestos
+
+**Nota**: Todas las contribuciones serán revisadas por el equipo del Mirai Innovation Research Institute antes de ser aceptadas.
 
 ## Notas Importantes
 
