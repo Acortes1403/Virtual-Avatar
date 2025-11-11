@@ -564,7 +564,7 @@ Este proyecto es privado y propietario. No está permitido el uso, copia, modifi
 
 ## Contribuciones
 
-Las contribuciones son bienvenidas previa validación y aprobación del **Mirai Innovation Research Institute**.
+Las contribuciones son bienvenidas, pero con previa validación y aprobación de parte de **Mirai Innovation Research Institute**.
 
 Para contribuir:
 1. Haz fork del proyecto en [GitHub](https://github.com/Acortes1403/Virtual-Avatar)
