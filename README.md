@@ -59,6 +59,7 @@ Estas carpetas son útiles si deseas entrenar nuevos modelos o explorar cómo co
 - **Cámara y micrófono**: Para captura en tiempo real
 
 ### Dependencias del Sistema
+pepper password: M1rai1nnovation
 
 #### Windows
 ```bash
